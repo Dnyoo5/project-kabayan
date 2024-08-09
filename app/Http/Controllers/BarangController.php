@@ -68,7 +68,7 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
-
+        $barang = Barang::where('nama_barang', $request->nama_barang)->first();
         $validasi =Validator::make($request->all(),[
             'nama_barang'=>'required',
             'kategori'=>'required',
@@ -77,12 +77,13 @@ class BarangController extends Controller
         ],[
             'nama_barang.required'=>'nama Barang Wajib di isi',
             'kategori.required'=>'kategori wajib di isi',
-            'jumlah.required'=>'tentukan jumlah Wajib di isi',
+            'jumlah.required'=>' jumlah Wajib di isi',
         ]);
         if($validasi->fails()) {
             return response()->json(['errors'=>$validasi->errors()]);
         }
         else {
+
 
             $data =[
                 'nama_barang'=>$request->nama_barang,
@@ -90,6 +91,7 @@ class BarangController extends Controller
                 'jumlah'=>$request->jumlah
     
             ];
+
         }
 
         barang::create($data);
@@ -137,7 +139,7 @@ class BarangController extends Controller
         ],[
             'nama_barang.required'=>'nama Barang Wajib di isi',
             'kategori.required'=>'kategori wajib di isi',
-            'jumlah.required'=>'tentukan jumlah Wajib di isi',
+            'jumlah.required'=>'isi jumlah barang',
         ]);
         if($validasi->fails()) {
             return response()->json(['errors'=>$validasi->errors()]);
@@ -152,7 +154,7 @@ class BarangController extends Controller
             ];
         }
         barang::where('id',$id)->update($data);
-        return response()->json(['success'=> 'berhasil update data']);
+        return response()->json(['berhasil'=> 'berhasil update data']);
       
     }
 

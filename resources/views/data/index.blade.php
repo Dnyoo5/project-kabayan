@@ -175,10 +175,12 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" id="min_jumlah" class="form-control" placeholder="Min Jumlah">
+                                    <input type="number" id="min_jumlah" min="0" class="form-control"
+                                        placeholder="Min Jumlah">
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" id="max_jumlah" class="form-control" placeholder="Max Jumlah">
+                                    <input type="number" id="max_jumlah" min="0" class="form-control"
+                                        placeholder="Max Jumlah">
                                 </div>
                                 <div class="col-md-3">
                                     <button id="filter" class="btn btn-primary">Filter</button>
@@ -186,7 +188,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="alert alert-danger d-none"></div>
                         <table class="table table-striped" id="myTable">
                             <thead>
                                 <tr>
@@ -234,7 +235,7 @@
                                     <div class="mb-3 row">
                                         <label for="" class="col-sm-2 col-form-label">Jumlah</label>
                                         <div class="col-sm-10">
-                                            <input type="number" class="form-control" id="jumlah"
+                                            <input type="number" min="0" class="form-control" id="jumlah"
                                                 placeholder="Jumlah">
                                         </div>
                                     </div>

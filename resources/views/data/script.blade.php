@@ -66,9 +66,15 @@
     $('body').on('click', '.tombol-tambah', function(e) {
         e.preventDefault();
         $('#exampleModal').modal('show');
-        $('.tombol-simpan').click(function() {
-            simpan();
-            $('#exampleModal').modal('hide');
+        $.ajax({
+            success: function(response) {
+
+                $('.tombol-simpan').click(function() {
+                    simpan();
+                    $('#exampleModal').modal('hide');
+                    response.success.preventDefault();
+                })
+            }
         })
     });
 
@@ -86,20 +92,51 @@
                 $('.tombol-simpan').click(function() {
                     simpan(id);
                     $('#exampleModal').modal('hide');
+
+                    response.berhasil.preventDefault();
                 });
+
             }
         });
     });
 
     $('body').on('click', '.tombol-delete', function(e) {
-        if (confirm('yakin mau di hapus') == true) {
-            var id = $(this).data('id');
-            $.ajax({
-                url: 'BarangAjax/' + id,
-                type: 'DELETE',
-            });
-            $('#myTable').DataTable().ajax.reload();
-        }
+        var id = $(this).data('id');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mengirim permintaan Ajax untuk menghapus data
+                $.ajax({
+                    url: 'BarangAjax/' + id,
+                    type: 'DELETE', // Metode pengiriman data
+                    success: function(response) {
+                        // Tampilkan pesan sukses setelah berhasil dihapus
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Your file has been deleted.",
+                            icon: "success"
+                        });
+                        $('#myTable').DataTable().ajax.reload();
+
+                    },
+                    error: function(xhr, status, error) {
+                        // Tampilkan pesan error jika terjadi kesalahan
+                        Swal.fire({
+                            title: "Error!",
+                            text: "There was an issue deleting the file.",
+                            icon: "error"
+                        });
+                    }
+                });
+            }
+        });
     });
 
     function simpan(id = ' ') {
@@ -119,17 +156,36 @@
                 jumlah: $('#jumlah').val(),
             },
             success: function(response) {
+
                 if (response.errors) {
-                    $('.alert-danger').removeClass('d-none');
-                    $('.alert-danger').append("<ul>")
                     $.each(response.errors, function(key, value) {
-                        $('.alert-danger').find('ul').append("<li>" + value + "</li>");
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: value,
+                        }).then(() => {
+                            // Tampilkan modal setelah SweetAlert ditutup
+                            $('#exampleModal').modal('show');
+                        });
+
                     });
-                    $('.alert-danger').append("</ul>");
                 } else {
-                    $('.alert-success').removeClass('d-none');
-                    $('.alert-success').html(response.success);
+                    if (response.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Data Berhasil Masuk",
+                            text: "Data Telah Di Tambahkan",
+                        });
+                    } else if (response.berhasil) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Data Berhasil di edit",
+                            text: "Data  Diedit",
+                        })
+
+                    }
                 }
+
                 $('#myTable').DataTable().ajax.reload();
             }
         })
