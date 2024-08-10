@@ -17,6 +17,9 @@
                     d.kategori = $('#kategori_barang').val();
                     d.min_jumlah = $('#min_jumlah').val();
                     d.max_jumlah = $('#max_jumlah').val();
+                    console.log('Kategori:', d.kategori);
+                    console.log('Min Jumlah:', d.min_jumlah);
+                    console.log('Max Jumlah:', d.max_jumlah);
                 }
             },
             columns: [{
@@ -56,49 +59,128 @@
         });
     });
 
+    $(document).ready(function() {
+        $('#kategoriTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('KategoriBarang') }}",
+            },
+            columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'kategori',
+                    name: 'kategori'
+                },
+                {
+                    data: 'aksi',
+                    name: 'aksi'
+                }
+            ]
+        });
+    });
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
-
+    var scrollPost;
     $('body').on('click', '.tombol-tambah', function(e) {
         e.preventDefault();
-        $('#exampleModal').modal('show');
-        $.ajax({
-            success: function(response) {
+        scrollPost = $(window).scrollTop();
+        // Reset form dan modal sebelum digunakan untuk "add"
+        $('#modalTitleEdit').text('Tambah Data Barang');
+        $('#nama_barang').val(''); // Kosongkan input field
+        $('#kategori').val('');
+        $('#jumlah').val('');
 
-                $('.tombol-simpan').click(function() {
-                    simpan();
-                    $('#exampleModal').modal('hide');
-                    response.success.preventDefault();
-                })
-            }
-        })
+        // Pastikan event listener sebelumnya dihapus dan tambahkan event listener baru
+        $('.tombol-simpan').off('click').on('click', function() {
+            simpan(); // Panggil fungsi simpan tanpa ID untuk menambah data baru
+            $('#exampleModal').modal('hide');
+        });
+
+        $('#exampleModal').modal('show'); // Tampilkan modal
+        $('#exampleModal').on('shown.bs.modal', function() {
+            $(window).scrollTop(scrollPost);
+        });
     });
 
     $('body').on('click', '.tombol-edit', function(e) {
         var id = $(this).data('id');
+        // Ambil data dari server untuk diisi ke dalam modal
+        var scrollPos = $(window).scrollTop();
+
         $.ajax({
             url: 'BarangAjax/' + id + '/edit',
             type: 'GET',
             success: function(response) {
                 $('#exampleModal').modal('show');
-                $('#modalTitleEdit').text('Edit Data ' + response.result.nama_barang)
+                $('#modalTitleEdit').text('Edit Data ' + response.result.nama_barang);
                 $('#nama_barang').val(response.result.nama_barang);
                 $('#jumlah').val(response.result.jumlah);
                 $('#kategori').val(response.result.kategori);
-                $('.tombol-simpan').click(function() {
-                    simpan(id);
+                $('.tombol-simpan').off('click').on('click', function() {
+                    simpan(
+                        id); // Panggil fungsi simpan dengan ID untuk mengedit data
                     $('#exampleModal').modal('hide');
-
-                    response.berhasil.preventDefault();
                 });
-
+                $('#exampleModal').on('shown.bs.modal', function() {
+                    $(window).scrollTop(scrollPos);
+                });
             }
         });
     });
+
+
+    $(document).ready(function() {
+        // Memanggil data statistik
+        $.ajax({
+            url: "{{ route('statistik') }}",
+            method: 'GET',
+            success: function(data) {
+                $('#circles-barang').text(data.nama_barang);
+                $('#circles-kategori').text(data.kategori);
+                $('#circles-jumlah').text(data.jumlah);
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    });
+
+
+
+    $('body').on('click', '.tombol-show', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: 'BarangAjax/' + id,
+            type: 'GET',
+            success: function(response) {
+                // Tampilkan detail data dalam modal atau area lain
+                $('#showModal').modal('show');
+                $('#showModal .modal-body').html(`
+                    <p><strong>Nama Barang:</strong> ${response.result.nama_barang}</p>
+                    <p><strong>Kategori:</strong> ${response.result.kategori}</p>
+                    <p><strong>Jumlah:</strong> ${response.result.jumlah}</p>`);
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Terjadi kesalahan saat mengambil data.',
+                });
+            }
+        });
+    });
+
 
     $('body').on('click', '.tombol-delete', function(e) {
         var id = $(this).data('id');
@@ -139,8 +221,8 @@
         });
     });
 
-    function simpan(id = ' ') {
-        if (id == ' ') {
+    function simpan(id = '') {
+        if (id === '') {
             var var_url = 'BarangAjax';
             var var_type = 'POST';
         } else {
@@ -163,10 +245,7 @@
                             icon: "error",
                             title: "Oops...",
                             text: value,
-                        }).then(() => {
-                            // Tampilkan modal setelah SweetAlert ditutup
-                            $('#exampleModal').modal('show');
-                        });
+                        })
 
                     });
                 } else {
@@ -180,7 +259,7 @@
                         Swal.fire({
                             icon: "success",
                             title: "Data Berhasil di edit",
-                            text: "Data  Diedit",
+                            text: "Data Diedit",
                         })
 
                     }
@@ -188,7 +267,7 @@
 
                 $('#myTable').DataTable().ajax.reload();
             }
-        })
+        });
     }
 
 

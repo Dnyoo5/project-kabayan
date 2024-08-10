@@ -25,10 +25,9 @@
             @include('components.navbar')
             <!-- Sidebar -->
             @include('components.sidebar')
-
             <div class="main-panel">
                 <div class="content">
-                    <div class="panel-header bg-primary-gradient">
+                    <div class="panel-header bg-info-gradient">
                         <div class="page-inner py-5">
                             <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
                                 <div>
@@ -41,38 +40,12 @@
                     <main class="container">
                         <div class="d-flex flex-column">
                             @include('components.exportAdd')
-                            <div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <select name="kategori_barang" id="kategori_barang" class="form-control">
-                                            <option value="" disabled selected>Pilih Kategori</option>
-                                            <option value="Pakaian">Pakaian</option>
-                                            <option value="Elektronik">Elektronik</option>
-                                            <option value="Peralatan Rumah">Peralatan Rumah</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" id="min_jumlah" min="1" class="form-control"
-                                            placeholder="Min Jumlah">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" id="max_jumlah" min="1" class="form-control"
-                                            placeholder="Max Jumlah">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button id="filter" class="btn btn-primary">Filter</button>
-                                        <button id="reset" class="btn btn-secondary">Reset</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <table class="table table-striped" id="myTable">
+                            <table class="table table-striped" id="kategoriTable">
                                 <thead>
                                     <tr>
                                         <th class="col-md-1 text-center">No</th>
-                                        <th class="col-md-4">Nama Barang</th>
-                                        <th class="col-md-2">Kategori</th>
-                                        <th class="col-md-1 text-center">Jumlah</th>
-                                        <th class="col-md-2 text-center">Aksi</th>
+                                        <th class="col-md-5">Kategori</th>
+                                        <th class="col-md-2">Aksi</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -81,5 +54,4 @@
                     @include('components.modal')
                 </div>
             </div>
-        </div>
-    @endsection
+        @endsection

@@ -5,6 +5,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\Barangiventory;
 use App\Http\Controllers\halamanController;
 use App\Http\Controllers\iventory;
+use App\Http\Controllers\KategoriController;
 use App\Models\iventori;
 use Illuminate\Support\Facades\Route;
 use Yajra\DataTables\Facades\DataTables;
@@ -23,7 +24,10 @@ use Yajra\DataTables\Facades\DataTables;
 Route::get('/barang',function() {
     return view('data.index');
 });
-
+Route::get('/home', [BarangController::class, 'getStatistik'])->name('statistik');
 Route::resource('BarangAjax',BarangController::class);
-
+Route::get('/kategori',function() {
+    return view('data.kategori');
+});
+Route::resource('KategoriBarang',KategoriController::class);
 Route::get('barang/export/', [halamanController::class, 'export']);

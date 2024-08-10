@@ -21,7 +21,7 @@ class BarangController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = barang::orderBy('nama_barang','asc');
+            $data = barang::orderBy('id','asc');
 
             // Apply filters
             if ($request->filled('kategori')) {
@@ -79,6 +79,19 @@ class BarangController extends Controller
             'kategori.required'=>'kategori wajib di isi',
             'jumlah.required'=>' jumlah Wajib di isi',
         ]);
+
+        $barang = barang::where('nama_barang', $request->nama_barang)->first();
+        if ($barang) {
+            // Jika ada, update jumlahnya
+            $barang->jumlah += $request->jumlah;
+            $barang->save();
+            return response()->json(['success' => true, 'message' => 'Data updated successfully']);
+        } else {
+            // Jika tidak ada, buat record baru
+            barang::create($request->all());
+            return response()->json(['success' => true, 'message' => 'Data added successfully']);
+        }
+
         if($validasi->fails()) {
             return response()->json(['errors'=>$validasi->errors()]);
         }
@@ -99,6 +112,22 @@ class BarangController extends Controller
       
     }
 
+    public function getStatistik(Request $request)
+    {
+        if ($request->ajax()) {
+            $statistik = [
+                'nama_barang' => barang::count(), // Jumlah total barang
+                'kategori' => barang::distinct('kategori')->count('kategori'), // Jumlah kategori unik
+                'jumlah' => barang::sum('jumlah') // Total jumlah barang
+            ];
+            return response()->json($statistik);
+        }
+    
+        return view('data.home');
+    }
+    
+
+
     /**
      * Display the specified resource.
      *
@@ -107,7 +136,8 @@ class BarangController extends Controller
      */
     public function show($id)
     {
-        //
+            $data = barang::findOrFail($id); // Ambil data berdasarkan ID atau gagal jika tidak ditemukan
+    return response()->json(['result' => $data]);
     }
 
     /**
