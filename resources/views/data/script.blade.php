@@ -1,12 +1,5 @@
 <script src="//cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
 <script>
-    $('body').on('click', '.tombol-filters', function(e) {
-        e.preventDefault();
-        $('#filters').modal('show');
-    });
-
-
-
     $(document).ready(function() {
         var table = $('#myTable').DataTable({
             processing: true,
@@ -60,6 +53,7 @@
     });
 
     $(document).ready(function() {
+
         $('#kategoriTable').DataTable({
             processing: true,
             serverSide: true,
@@ -83,6 +77,7 @@
             ]
         });
     });
+
 
     $.ajaxSetup({
         headers: {
@@ -127,7 +122,8 @@
                 $('#kategori').val(response.result.kategori);
                 $('.tombol-simpan').off('click').on('click', function() {
                     simpan(
-                        id); // Panggil fungsi simpan dengan ID untuk mengedit data
+                        id
+                    ); // Panggil fungsi simpan dengan ID untuk mengedit data
                     $('#exampleModal').modal('hide');
                 });
                 $('#exampleModal').on('shown.bs.modal', function() {
@@ -137,22 +133,6 @@
         });
     });
 
-
-    $(document).ready(function() {
-        // Memanggil data statistik
-        $.ajax({
-            url: "{{ route('statistik') }}",
-            method: 'GET',
-            success: function(data) {
-                $('#circles-barang').text(data.nama_barang);
-                $('#circles-kategori').text(data.kategori);
-                $('#circles-jumlah').text(data.jumlah);
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
-        });
-    });
 
 
 

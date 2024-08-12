@@ -82,12 +82,6 @@
                     </a>
                     <div class="collapse" id="tables">
                         <ul class="nav nav-collapse">
-                            <li>
-                                <a href="{{ url('/kategori') }}">
-                                    <span class="sub-item">Table Kategori</span>
-                                </a>
-                            </li>
-
                         </ul>
                     </div>
                 </li>

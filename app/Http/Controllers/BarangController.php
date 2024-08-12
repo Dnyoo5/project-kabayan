@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\barang;
 use App\Models\iventori;
+use App\Charts\BarangChart;
 use Illuminate\Http\Request;
 use App\Exports\BarangExport;
 use App\Exports\ExportPeople;
@@ -18,7 +19,7 @@ class BarangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, BarangChart $barangChart)
     {
         if ($request->ajax()) {
             $data = barang::orderBy('id','asc');
@@ -38,13 +39,14 @@ class BarangController extends Controller
 
 
 
-
+          
       
         return DataTables::of($data)->addIndexColumn()
         ->addColumn('aksi',function($data) {
             return view('data.tombol')->with('data',$data);
         })->make(true);
     }
+
 
 }
 

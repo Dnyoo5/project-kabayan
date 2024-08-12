@@ -21,11 +21,11 @@
                     <div class="mb-3 row">
                         <label for="kategori" class="col-sm-2 col-form-label">Kategori</label>
                         <div class="col-sm-10">
-                            <select name="kategori" id="kategori" class="form-control">
+                            <select name="kategori_select" id="kategori" class="form-control">
                                 <option value="" disabled selected>Pilih Opsi</option>
-                                <option value="Peralatan Rumah">Peralatan Rumah</option>
-                                <option value="Elektronik">Elektronik</option>
                                 <option value="Pakaian">Pakaian</option>
+                                <option value="Elektronik">Elektronik</option>
+                                <option value="Peralatan Rumah">Peralatan Rumah</option>
                             </select>
                         </div>
                     </div>

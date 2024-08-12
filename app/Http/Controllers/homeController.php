@@ -2,35 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Charts\BarangChart;
 use App\Models\barang;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 
-class KategoriController extends Controller
+class homeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-           if ($request->ajax()) {
-        $categories = Barang::select('kategori')
-                             ->distinct()
-                             ->get();
+        $data = barang::selectRaw('kategori, SUM(jumlah) as total')
+        ->groupBy('kategori')
+        ->get();
 
-        return DataTables::of($categories)
-            ->addIndexColumn()  // Menambahkan kolom nomor urut
-            ->addColumn('aksi', function($row) {
-                return view('data.tombol-kategori');
-            })
-            ->rawColumns(['aksi'])  // Untuk rendering HTML di kolom 'aksi'
-            ->make(true);
+// Kirim data ke view
+        return view('data.home', ['data' => $data]);
+        
     }
-    }
-    
-
 
     /**
      * Show the form for creating a new resource.

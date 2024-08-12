@@ -27,88 +27,69 @@
             @include('components.sidebar')
             <div class="main-panel">
                 <div class="content">
-                    <div class="page-inner">
-                        <!-- Card -->
-                        <h4 class="page-title">Card</h4>
-                        <div class="row">
-                            <div class="col-sm-6 col-md-3">
-                                <div class="card card-stats card-primary card-round">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-5">
-                                                <div class="icon-big text-center">
-                                                    <i class="flaticon-users"></i>
-                                                </div>
-                                            </div>
-                                            <div class="col-7 col-stats">
-                                                <div class="numbers">
-                                                    <p class="card-category">users tersedia</p>
-                                                    <h4 class="card-title" id="circles-delete"></h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-3">
-                                <div class="card card-stats card-info card-round">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-5">
-                                                <div class="icon-big text-center">
-                                                    <i class="flaticon-interface-6"></i>
-                                                </div>
-                                            </div>
-                                            <div class="col-7 col-stats">
-                                                <div class="numbers">
-                                                    <p class="card-category">Kategori</p>
-                                                    <h4 class="card-title text-center" id="circles-kategori"></h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-3">
-                                <div class="card card-stats card-success card-round">
-                                    <div class="card-body ">
-                                        <div class="row">
-                                            <div class="col-5">
-                                                <div class="icon-big text-center">
-                                                    <i class="flaticon-analytics"></i>
-                                                </div>
-                                            </div>
-                                            <div class="col-7 col-stats">
-                                                <div class="numbers">
-                                                    <p class="card-category">Data Barang</p>
-                                                    <h4 class="card-title text-center" id="circles-barang"></h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-3">
-                                <div class="card card-stats card-secondary card-round">
-                                    <div class="card-body ">
-                                        <div class="row">
-                                            <div class="col-5">
-                                                <div class="icon-big text-center">
-                                                    <i class="flaticon-success"></i>
-                                                </div>
-                                            </div>
-                                            <div class="col-7 col-stats">
-                                                <div class="numbers">
-                                                    <p class="card-category">Jumlah Barang</p>
-                                                    <h4 class="card-title" id="circles-jumlah"></h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="chart-jumlah">
+
                     </div>
+
                 </div>
             </div>
+        @section('footer')
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script>
+                var data = @json($data);
+
+                // Check the data format
+                // Prepare data for Highcharts
+                var chartData = data.map(function(item) {
+                    return {
+                        name: item.kategori,
+                        y: parseFloat(item.total)
+                    };
+                });
+
+                console.log(chartData);
+
+
+
+                Highcharts.chart('chart-jumlah', {
+                    chart: {
+                        type: 'pie'
+                    },
+                    title: {
+                        text: 'Jumlah Barang Berdasarkan Kategori'
+                    },
+
+
+                    plotOptions: {
+                        series: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: [{
+                                enabled: true,
+                                distance: 20
+                            }, {
+                                enabled: true,
+                                distance: -40,
+                                format: '{point.percentage:.1f}%',
+                                style: {
+                                    fontSize: '1.2em',
+                                    textOutline: 'none',
+                                    opacity: 0.7
+                                },
+                                filter: {
+                                    operator: '>',
+                                    property: 'percentage',
+                                    value: 10
+                                }
+                            }]
+                        }
+                    },
+                    series: [{
+                        name: 'Jumlah',
+                        colorByPoint: true,
+                        data: chartData
+                    }]
+                });
+            </script>
         @endsection
+    @endsection
