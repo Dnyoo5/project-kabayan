@@ -41,12 +41,13 @@
                     <main class="container">
                         <div class="d-flex flex-column">
                             <div class="mt-2">
-                                <a href="" class="btn btn-danger tombol-tambah mt-1 ml-2" style="float: right;"><svg
+                                <a href="" class="btn btn-danger tombol-tambah mt-1 ml-2" data-toggle="modal"
+                                    data-target="#exampleModal" style="float: right;"><svg
                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="mr-2 bi bi-plus-square-fill" viewBox="0 0 16 16">
                                         <path
                                             d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0" />
-                                    </svg><span id="Add-Kategori">Add Iventory</span></a>
+                                    </svg><span class="btn-tambah-barang">Add Iventory</span></a>
 
                                 <a href="{{ url('barang/export') }}"
                                     class="btn border  border-dark   btn-warning mb-5 mt-1 ml-2 " style="float: right">
@@ -62,9 +63,9 @@
                                     <div class="col-md-3">
                                         <select name="kategori_barang" id="kategori_barang" class="form-control">
                                             <option value="" disabled selected>Pilih Kategori</option>
-                                            <option value="Pakaian">Pakaian</option>
-                                            <option value="Elektronik">Elektronik</option>
-                                            <option value="Peralatan Rumah">Peralatan Rumah</option>
+                                            @foreach ($kategori as $item)
+                                                <option value="{{ $item->id }}">{{ $item->kategori }}</option>
+                                            @endforeach
 
                                         </select>
                                     </div>
@@ -82,21 +83,231 @@
                                     </div>
                                 </div>
                             </div>
-                            <table class="table table-striped" id="myTable">
-                                <thead>
+                            <table class="table " id="barangTable">
+                                <thead class="bg-primary text-light border">
                                     <tr>
-                                        <th class="col-md-1 text-center">No</th>
-                                        <th class="col-md-4">Nama Barang</th>
-                                        <th class="col-md-2">Kategori</th>
-                                        <th class="col-md-1 text-center">Jumlah</th>
-                                        <th class="col-md-2 text-center">Aksi</th>
+                                        <th>No</th>
+                                        <th>Nama Barang</th>
+                                        <th>Kategori</th>
+                                        <th>Jumlah</th>
+                                        <th class="col-md-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <!-- DataTables akan mengisi data di sini -->
+                                </tbody>
                             </table>
                         </div>
-                    </main>
-                    @include('components.modal')
                 </div>
+                </main>
+
             </div>
         </div>
-    @endsection
+    </div>
+    {{-- modal tambah --}}
+    @include('components.barangModals')
+@section('script')
+    <script src="//cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#barangTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('barang.datatables') }}",
+                    type: 'GET',
+                    data: function(d) {
+                        d.kategori = $('#kategori_barang').val();
+                        d.min_jumlah = $('#min_jumlah').val();
+                        d.max_jumlah = $('#max_jumlah').val();
+                        console.log('Kategori:', d.kategori);
+                        console.log('Min Jumlah:', d.min_jumlah);
+                        console.log('Max Jumlah:', d.max_jumlah);
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'nama_barang',
+                        name: 'nama_barang'
+                    },
+                    {
+                        data: 'kategori',
+                        name: 'kategori'
+                    },
+                    {
+                        data: 'jumlah',
+                        name: 'jumlah'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+
+            $('#filter').click(function() {
+                table.draw();
+            });
+
+            $('#reset').on('click', function() {
+                $('#kategori_barang').val('');
+                $('#min_jumlah').val('');
+                $('#max_jumlah').val('');
+                table.ajax.reload();
+            });
+        });
+
+        // METODE ADD
+        $(document).ready(function() {
+            // Event listener untuk tombol simpan
+            $('.tombol-simpan').on('click', function() {
+                var form = $('#tambahBarangForm');
+                var url = "{{ route('barang.store') }}"; // URL untuk store data barang
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: form.serialize(), // Mengirimkan data form
+                    success: function(response) {
+                        if (response.success) {
+                            // Jika sukses, tampilkan notifikasi
+                            $('#exampleModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message
+                            }).then(() => {
+                                // Tutup modal
+                                $('#modalTitleEdit').text('Tambah Data Barang');
+                                $('#nama_barang').val(''); // Kosongkan input field
+                                $('#kategori_id').val('');
+                                $('#jumlah').val('');
+
+                                // Refresh tabel atau lakukan tindakan lain
+                                $('#barangTable').DataTable().ajax.reload();
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi kesalahan!',
+                            text: 'Silakan coba lagi.'
+                        });
+                    }
+                });
+            });
+        });
+
+        // METODE SHOW
+        $('body').on('click', '.btn-show-barang', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+
+            $.ajax({
+                url: '/barang/' + id,
+                type: 'GET',
+                success: function(response) {
+                    // Tampilkan detail data dalam modal atau area lain
+                    $('#showModal').modal('show');
+                    $('#showModal .modal-body').html(`
+                    <p><strong>Nama Barang:</strong> ${response.result.nama_barang}</p>
+                    <p><strong>Kategori:</strong> ${response.result.kategori.kategori}</p>
+                    <p><strong>Jumlah:</strong> ${response.result.jumlah}</p>`);
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi kesalahan saat mengambil data.',
+                    });
+                }
+            });
+        });
+
+        // METODE EDIT 
+        $(document).on('click', '.btn-edit-barang', function() {
+            var id = $(this).data('id');
+            $.get('{{ url('barang') }}/' + id + '/edit', function(data) {
+                $('#editModal #id').val(data.barang.id);
+                $('#editModal #nama_barang').val(data.barang.nama_barang);
+                $('#editModal #kategori_id').val(data.barang.kategori_id);
+                $('#editModal #jumlah').val(data.barang.jumlah);
+                $('#editModal').modal('show');
+            });
+        });
+
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '{{ url('barang') }}/' + $('#editModal #id').val(),
+                method: 'PUT',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#editModal').modal('hide');
+                        $('#barangTable').DataTable().ajax.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                }
+            });
+        });
+
+        // delete
+
+        $(document).on('click', '.btn-delete-barang', function() {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Data akan dihapus secara permanen.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ url('barang') }}/' + id,
+                        method: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $('#barangTable').DataTable().ajax.reload();
+                                Swal.fire(
+                                    'Dihapus!',
+                                    response.message,
+                                    'success'
+                                );
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                            alert('Terjadi kesalahan. Silakan coba lagi.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+@endsection
+@endsection

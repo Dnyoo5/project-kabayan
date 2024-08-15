@@ -7,6 +7,7 @@
     <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('img/icon.ico') }}" type="image/x-icon" />
+
     <!-- jQuery -->
 
     <!-- Bootstrap CSS -->
@@ -186,7 +187,9 @@
 
 
 
-    @include('data.script')
+
+    @yield('script')
+    @yield('kategori')
     @yield('footer')
 
 </body>

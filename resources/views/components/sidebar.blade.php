@@ -38,20 +38,10 @@
             </div>
             <ul class="nav nav-primary">
                 <li class="nav-item active">
-                    <a data-toggle="collapse" href="#dashboard" class="collapsed" aria-expanded="false">
+                    <a href="/home">
                         <i class="fas fa-home"></i>
                         <p>Dashboard</p>
-                        <span class="caret"></span>
                     </a>
-                    <div class="collapse" id="dashboard">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="/home">
-                                    <span class="sub-item">Home</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
@@ -60,30 +50,17 @@
                     <h4 class="text-section">Components</h4>
                 </li>
                 <li class="nav-item">
-                    <a data-toggle="collapse" href="#base">
+                    <a href="/barang">
                         <i class="fas fa-layer-group"></i>
-                        <p>Base</p>
-                        <span class="caret"></span>
+                        <p>Table Barang</p>
+
                     </a>
-                    <div class="collapse" id="base">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="/barang">
-                                    <span class="sub-item">Data Barang</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 <li class="nav-item">
-                    <a data-toggle="collapse" href="#tables">
+                    <a href="{{ url('/kategori') }}">
                         <i class="fas fa-table"></i>
-                        <p>Tables</p>
-                        <span class="caret"></span>
+                        <p>Tabel Kategori</p>
                     </a>
-                    <div class="collapse" id="tables">
-                        <ul class="nav nav-collapse">
-                        </ul>
-                    </div>
+
                 </li>
                 </li>
             </ul>

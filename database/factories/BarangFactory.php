@@ -19,7 +19,7 @@ class BarangFactory extends Factory
     {
         return [
           'nama_barang'=>fake()->randomElement(['Sweeter','Colokan','Jaket','Mobil','Motor','helm','gelas','jilbab','piring','botol','mouse','tv']),
-          'kategori'=>fake()->randomElement(['Pakaian','Elektronik','Peralatan Rumah']),
+          'kategori_id'=> kategoriFactory::factory(),
           'jumlah'=>fake()->randomDigitNot(0),
         ];
     }

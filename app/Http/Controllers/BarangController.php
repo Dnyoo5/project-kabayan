@@ -2,202 +2,136 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\barang;
-use App\Models\iventori;
-use App\Charts\BarangChart;
+use App\Models\Barang;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
-use App\Exports\BarangExport;
-use App\Exports\ExportPeople;
-use Maatwebsite\Excel\Facades\Excel;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class BarangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request, BarangChart $barangChart)
-    {
-        if ($request->ajax()) {
-            $data = barang::orderBy('id','asc');
+   public function index() {
+    $kategori = Kategori::all();
+    return view('data.index',compact('kategori'));
 
-            // Apply filters
-            if ($request->filled('kategori')) {
-                $data->where('kategori', $request->kategori);
-            }
+   }
 
-            if ($request->filled('min_jumlah')) {
-                $data->where('jumlah', '>=', $request->min_jumlah);
-            }
+   public function datatables(Request $request)
+   {
+    if ($request->ajax()) {
+        $data = barang::orderBy('id','asc');
 
-            if ($request->filled('max_jumlah')) {
-                $data->where('jumlah', '<=', $request->max_jumlah);
-            }
+        // Apply filters
+        if ($request->filled('kategori')) {
+            $data->where('kategori_id', $request->kategori);
+        }
 
+        if ($request->filled('min_jumlah')) {
+            $data->where('jumlah', '>=', $request->min_jumlah);
+        }
 
-
-          
-      
-        return DataTables::of($data)->addIndexColumn()
-        ->addColumn('aksi',function($data) {
-            return view('data.tombol')->with('data',$data);
-        })->make(true);
-    }
+        if ($request->filled('max_jumlah')) {
+            $data->where('jumlah', '<=', $request->max_jumlah);
+        }
 
 
+
+    
+    return DataTables::of($data)
+        ->addIndexColumn()->addColumn('kategori', function($row) {
+            return $row->kategori->kategori;
+        })
+        ->addColumn('aksi', function($row){
+            return view('components.btn',compact('row'));
+        }) ->rawColumns(['aksi'])
+        ->make(true);
+   }
 }
 
+   
 
+   public function store(Request $request)
+   {
+    $barang = Barang::where('nama_barang', $request->nama_barang)->first();
+    $request->validate([
+        'nama_barang' => 'required|string|max:255',
+        'kategori_id' => 'required|exists:kategoris,id',
+        'jumlah' => 'required|integer|min:1',
+    ]);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('data.index');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $barang = Barang::where('nama_barang', $request->nama_barang)->first();
-        $validasi =Validator::make($request->all(),[
-            'nama_barang'=>'required',
-            'kategori'=>'required',
-            'jumlah'=>'required',
-            
-        ],[
-            'nama_barang.required'=>'nama Barang Wajib di isi',
-            'kategori.required'=>'kategori wajib di isi',
-            'jumlah.required'=>' jumlah Wajib di isi',
+    // Buat barang baru
+    if ($barang) {
+        // Jika barang sudah ada, tambahkan jumlahnya
+        $barang->jumlah += $request->jumlah;
+        $barang->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Jumlah barang diperbarui',
+            'barang' => $barang
+        ]);
+    } else {
+        // Jika barang tidak ada, buat record baru
+        Barang::create([
+            'nama_barang' => $request->nama_barang,
+            'kategori_id' => $request->kategori_id,
+            'jumlah' => $request->jumlah,
         ]);
 
-        $barang = barang::where('nama_barang', $request->nama_barang)->first();
-        if ($barang) {
-            // Jika ada, update jumlahnya
-            $barang->jumlah += $request->jumlah;
-            $barang->save();
-            return response()->json(['success' => true, 'message' => 'Data updated successfully']);
-        } else {
-            // Jika tidak ada, buat record baru
-            barang::create($request->all());
-            return response()->json(['success' => true, 'message' => 'Data added successfully']);
-        }
-
-        if($validasi->fails()) {
-            return response()->json(['errors'=>$validasi->errors()]);
-        }
-        else {
-
-
-            $data =[
-                'nama_barang'=>$request->nama_barang,
-                'kategori'=>$request->kategori,
-                'jumlah'=>$request->jumlah
-    
-            ];
-
-        }
-
-        barang::create($data);
-        return response()->json(['success'=> 'berhasil menambahkan data']);
-      
-    }
-
-    public function getStatistik(Request $request)
-    {
-        if ($request->ajax()) {
-            $statistik = [
-                'nama_barang' => barang::count(), // Jumlah total barang
-                'kategori' => barang::distinct('kategori')->count('kategori'), // Jumlah kategori unik
-                'jumlah' => barang::sum('jumlah') // Total jumlah barang
-            ];
-            return response()->json($statistik);
-        }
-    
-        return view('data.home');
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'Data barang berhasil ditambahkan',
+    ]);
+}
+}
     
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-            $data = barang::findOrFail($id); // Ambil data berdasarkan ID atau gagal jika tidak ditemukan
-    return response()->json(['result' => $data]);
+        $barang = Barang::with('kategori')->findOrFail($id);
+        return response()->json(['result' => $barang]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        $data = barang::where('id',$id)->first();
-        return response()->json(['result' => $data]);
+        $barang = Barang::findOrFail($id);
+        $kategori = Kategori::all();
+        return response()->json([
+            'barang' => $barang,
+            'kategori' => $kategori
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        $validasi =Validator::make($request->all(),[
-            'nama_barang'=>'required',
-            'kategori'=>'required',
-            'jumlah'=>'required',
-            
-        ],[
-            'nama_barang.required'=>'nama Barang Wajib di isi',
-            'kategori.required'=>'kategori wajib di isi',
-            'jumlah.required'=>'isi jumlah barang',
+        $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'kategori_id' => 'required|exists:kategoris,id',
+            'jumlah' => 'required|integer|min:1',
         ]);
-        if($validasi->fails()) {
-            return response()->json(['errors'=>$validasi->errors()]);
-        }
-        else {
 
-            $data =[
-                'nama_barang'=>$request->nama_barang,
-                'kategori'=>$request->kategori,
-                'jumlah'=>$request->jumlah
-    
-            ];
-        }
-        barang::where('id',$id)->update($data);
-        return response()->json(['berhasil'=> 'berhasil update data']);
-      
+        $barang = Barang::findOrFail($id);
+        $barang->update([
+            'nama_barang' => $request->nama_barang,
+            'kategori_id' => $request->kategori_id,
+            'jumlah' => $request->jumlah,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil diupdate'
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        barang::where('id',$id)->delete();
+        $barang = Barang::findOrFail($id);
+        $barang->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil dihapus'
+        ]);
     }
-}
+ }
+
+

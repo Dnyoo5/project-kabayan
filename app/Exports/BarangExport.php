@@ -22,7 +22,7 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
     public function collection()
     {
         // Hanya memilih kolom yang diinginkan
-        return barang::select('id', 'nama_barang', 'kategori','jumlah','created_at')->get();
+        return barang::with('kategori')->get();
     }
 
     private $rowNumber = 0;

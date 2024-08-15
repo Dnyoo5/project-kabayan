@@ -27,69 +27,238 @@
             @include('components.sidebar')
             <div class="main-panel">
                 <div class="content">
-                    <div id="chart-jumlah">
+                    <div class="page-inner">
+                        <!-- Card -->
+                        <h4 class="page-title">Card</h4>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-3">
+                                <div class="card card-stats card-primary card-round">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="flaticon-users"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Visitors</p>
+                                                    <h4 class="card-title">1,294</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <div class="card card-stats card-info card-round">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="flaticon-interface-6"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Kategori</p>
+                                                    <h4 class="card-title" id="kategori"></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <div class="card card-stats card-success card-round">
+                                    <div class="card-body ">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="flaticon-analytics"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Barang</p>
+                                                    <h4 class="card-title" id="nama_barang"></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <div class="card card-stats card-secondary card-round">
+                                    <div class="card-body ">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="flaticon-success"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Total Barang</p>
+                                                    <h4 class="card-title" id="jumlah"></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title">Data Barang Terbanyak</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <div id="container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title">Jumlah Barang Berdasarkan Kategori</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <div id="chart-jumlah"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    </div>
 
-                </div>
-            </div>
-        @section('footer')
-            <script src="https://code.highcharts.com/highcharts.js"></script>
-            <script>
-                var data = @json($data);
+                        </div>
+                    @section('footer')
+                        <script src="https://code.highcharts.com/highcharts.js"></script>
+                        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-                // Check the data format
-                // Prepare data for Highcharts
-                var chartData = data.map(function(item) {
-                    return {
-                        name: item.kategori,
-                        y: parseFloat(item.total)
-                    };
-                });
+                        <script>
+                            var data = @json($data);
 
-                console.log(chartData);
+                            // Check the data format
+                            // Prepare data for Highcharts
+                            var chartData = data.map(function(item) {
+                                return {
+                                    name: item.kategori,
+                                    y: parseFloat(item.total)
+                                };
+                            });
 
-
-
-                Highcharts.chart('chart-jumlah', {
-                    chart: {
-                        type: 'pie'
-                    },
-                    title: {
-                        text: 'Jumlah Barang Berdasarkan Kategori'
-                    },
+                            console.log(chartData);
 
 
-                    plotOptions: {
-                        series: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            dataLabels: [{
-                                enabled: true,
-                                distance: 20
-                            }, {
-                                enabled: true,
-                                distance: -40,
-                                format: '{point.percentage:.1f}%',
-                                style: {
-                                    fontSize: '1.2em',
-                                    textOutline: 'none',
-                                    opacity: 0.7
+
+                            Highcharts.chart('chart-jumlah', {
+                                chart: {
+                                    type: 'pie'
                                 },
-                                filter: {
-                                    operator: '>',
-                                    property: 'percentage',
-                                    value: 10
-                                }
-                            }]
-                        }
-                    },
-                    series: [{
-                        name: 'Jumlah',
-                        colorByPoint: true,
-                        data: chartData
-                    }]
-                });
-            </script>
-        @endsection
-    @endsection
+                                title: {
+                                    text: ''
+                                },
+
+
+                                plotOptions: {
+                                    series: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: [{
+                                            enabled: true,
+                                            distance: 20
+                                        }, {
+                                            enabled: true,
+                                            distance: -40,
+                                            format: '{point.percentage:.1f}%',
+                                            style: {
+                                                fontSize: '1.2em',
+                                                textOutline: 'none',
+                                                opacity: 0.7
+                                            },
+                                            filter: {
+                                                operator: '>',
+                                                property: 'percentage',
+                                                value: 10
+                                            }
+                                        }]
+                                    }
+                                },
+                                series: [{
+                                    name: 'Jumlah',
+                                    colorByPoint: true,
+                                    data: chartData
+                                }]
+                            });
+
+                            // 
+                            $(document).ready(function() {
+                                // Ambil data dari server
+                                $.ajax({
+                                    url: "{{ route('home.getTopBarang') }}",
+                                    method: 'GET',
+                                    success: function(data) {
+                                        // Inisialisasi Highcharts
+                                        console.log(data);
+                                        Highcharts.chart('container', {
+                                            chart: {
+                                                type: 'column'
+                                            },
+                                            title: {
+                                                align: 'left',
+                                                text: ' '
+                                            },
+
+                                            xAxis: {
+                                                type: 'category'
+                                            },
+
+                                            legend: {
+                                                enabled: false
+                                            },
+                                            plotOptions: {
+                                                series: {
+                                                    borderWidth: 0,
+                                                    dataLabels: {
+                                                        enabled: true,
+
+                                                    }
+                                                }
+                                            },
+
+
+                                            series: [{
+                                                name: 'Jumlah',
+                                                colorByPoint: true,
+                                                data: data
+                                            }]
+                                        });
+
+                                    }
+                                });
+                            });
+
+                            $(document).ready(function() {
+
+                                $.ajax({
+                                    url: "{{ route('home.statistik') }}", // URL rute yang mengarah ke metode getStatistik
+                                    type: 'GET',
+                                    success: function(data) {
+                                        console.log(data);
+                                        $('#nama_barang').text(data.nama_barang);
+                                        $('#kategori').text(data.kategori);
+                                        $('#jumlah').text(data.jumlah);
+                                    },
+                                    error: function(xhr) {
+                                        console.error('Terjadi kesalahan:', xhr);
+                                    }
+                                });
+                            });
+                        </script>
+                    @endsection
+                @endsection
