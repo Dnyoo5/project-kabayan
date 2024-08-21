@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\barang;
 use Illuminate\Http\Request;
 use App\Exports\BarangExport;
+use App\Models\Kategori;
+use App\Models\supplier;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -13,22 +15,18 @@ class homeController extends Controller
 
     public function index()
     {
-       
-        $data = barang::select('kategori')
-        ->selectRaw('SUM(jumlah) as total')
-        ->join('kategoris', 'barang.kategori_id', '=', 'kategoris.id') // Ganti dengan nama tabel dan kolom yang benar
-        ->groupBy('kategori_id', 'kategoris.kategori') // Ganti dengan nama kolom yang benar
-        ->get();
+        $data = barang::select('kategoris.kategori')
+            ->selectRaw('SUM(barangs.jumlah) as total')
+            ->join('kategoris', 'barangs.kategori_id', '=', 'kategoris.id')
+            ->groupBy('kategoris.kategori')
+            ->get();
     
-    // Kirim data ke view
-    return view('data.home', ['data' => $data]);
+        // Kirim data ke view
+        return view('data.home', ['data' => $data]);
     }
+    
 
 
-    public function export() 
-{
-    return Excel::download(new BarangExport, 'barang.xlsx');
-}
 
 
     public function getTopBarang()
@@ -56,7 +54,7 @@ public function getStatistik(Request $request)
         if ($request->ajax()) {
             $statistik = [
                 'nama_barang' => barang::count(), // Jumlah total barang
-                'kategori' => barang::distinct('kategori_id')->count('kategori_id'), // Jumlah kategori unik
+                'kategori' => Kategori::count(), // Jumlah kategori unik
                 'jumlah' => barang::sum('jumlah') // Total jumlah barang
             ];
             return response()->json($statistik);
@@ -65,7 +63,15 @@ public function getStatistik(Request $request)
         return view('data.home');
     }
 
+public function supplier() {
+    $totalSupplier = Supplier::count();
+
+    // Kembalikan data dalam bentuk JSON
+    return response()->json(['totalSupplier' => $totalSupplier]);
+
 }
+}
+
 
 
 

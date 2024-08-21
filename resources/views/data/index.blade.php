@@ -28,81 +28,108 @@
 
             <div class="main-panel">
                 <div class="content">
-                    <div class="panel-header bg-primary-gradient">
-                        <div class="page-inner py-5">
-                            <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
-                                <div>
-                                    <h2 class="text-white pb-2 fw-bold">Barang</h2>
-                                    <h5 class="text-white op-7 mb-2">Free Bootstrap 4 Admin Dashboard</h5>
+                    <div class="page-inner">
+                        <div class="page-header">
+                            <h4 class="page-title">Barang Table</h4>
+                            <ul class="breadcrumbs">
+                                <li class="nav-home">
+                                    <a href="/home">
+                                        <i class="flaticon-home"></i>
+                                    </a>
+                                </li>
+                                <li class="separator">
+                                    <i class="flaticon-right-arrow"></i>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/barang">Tabel Barang </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Barang Table</h4>
+                                    </div>
+                                    <div class="mt-2">
+                                        <a href="" class="btn btn-danger tombol-tambah mt-1 ml-2" data-toggle="modal"
+                                            data-target="#exampleModal" style="float: right;"><svg
+                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="mr-2 bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0" />
+                                            </svg><span class="btn-tambah-barang">Add Iventory</span></a>
+
+                                        <a href="{{ url('barang/export') }}"
+                                            class="btn border  border-dark   btn-warning mb-5 mt-1 ml-2 "
+                                            style="float: right">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="mr-2 bi bi-arrow-down-square-fill"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0" />
+                                            </svg><span>Export Excel</span></a>
+                                    </div>
+                                    <div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <select name="kategori_barang" id="kategori_barang"
+                                                    class="form-control ml-3">
+                                                    <option value="" disabled selected>Pilih Kategori</option>
+                                                    @foreach ($kategori as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->kategori }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" id="min_jumlah" min="1" class="form-control"
+                                                    placeholder="Minimal Stok">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" id="max_jumlah" min="1" class="form-control"
+                                                    placeholder="Maximal Stok">
+                                            </div>
+                                            <div class="col-md-3 ">
+                                                <input type="number" id="min_harga" min="1" class="form-control"
+                                                    placeholder="Minimal Harga">
+                                            </div>
+                                            <div class="col-md-3 ml-3 mt-3">
+                                                <input type="number" id="max_harga" min="1" class="form-control"
+                                                    placeholder="Maximal harga Harga">
+                                            </div>
+                                            <div class="col-md-3 mt-3">
+                                                <button id="filter" class="btn btn-primary">Filter</button>
+                                                <button id="reset" class="btn btn-secondary">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="barangTable" class="display table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Nama</th>
+                                                        <th>Kategori</th>
+                                                        <th>Stok</th>
+                                                        <th>Harga Satuan</th>
+                                                        <th class="col-md-3">Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <main class="container">
-                        <div class="d-flex flex-column">
-                            <div class="mt-2">
-                                <a href="" class="btn btn-danger tombol-tambah mt-1 ml-2" data-toggle="modal"
-                                    data-target="#exampleModal" style="float: right;"><svg
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="mr-2 bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                        <path
-                                            d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0" />
-                                    </svg><span class="btn-tambah-barang">Add Iventory</span></a>
-
-                                <a href="{{ url('barang/export') }}"
-                                    class="btn border  border-dark   btn-warning mb-5 mt-1 ml-2 " style="float: right">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        fill="currentColor" class="mr-2 bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
-                                        <path
-                                            d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0" />
-                                    </svg><span>Export Excel</span></a>
-                            </div>
-
-                            <div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <select name="kategori_barang" id="kategori_barang" class="form-control">
-                                            <option value="" disabled selected>Pilih Kategori</option>
-                                            @foreach ($kategori as $item)
-                                                <option value="{{ $item->id }}">{{ $item->kategori }}</option>
-                                            @endforeach
-
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" id="min_jumlah" min="1" class="form-control"
-                                            placeholder="Min Jumlah">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" id="max_jumlah" min="1" class="form-control"
-                                            placeholder="Max Jumlah">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button id="filter" class="btn btn-primary">Filter</button>
-                                        <button id="reset" class="btn btn-secondary">Reset</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <table class="table " id="barangTable">
-                                <thead class="bg-primary text-light border">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama Barang</th>
-                                        <th>Kategori</th>
-                                        <th>Jumlah</th>
-                                        <th class="col-md-3 text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- DataTables akan mengisi data di sini -->
-                                </tbody>
-                            </table>
-                        </div>
                 </div>
-                </main>
-
             </div>
+            </main>
+
         </div>
+    </div>
     </div>
     {{-- modal tambah --}}
     @include('components.barangModals')
@@ -120,6 +147,8 @@
                         d.kategori = $('#kategori_barang').val();
                         d.min_jumlah = $('#min_jumlah').val();
                         d.max_jumlah = $('#max_jumlah').val();
+                        d.min_harga = $('#min_harga').val(); // Filter min harga
+                        d.max_harga = $('#max_harga').val();
                         console.log('Kategori:', d.kategori);
                         console.log('Min Jumlah:', d.min_jumlah);
                         console.log('Max Jumlah:', d.max_jumlah);
@@ -144,6 +173,10 @@
                         name: 'jumlah'
                     },
                     {
+                        data: 'harga',
+                        name: 'harga'
+                    },
+                    {
                         data: 'aksi',
                         name: 'aksi',
                         orderable: false,
@@ -160,6 +193,8 @@
                 $('#kategori_barang').val('');
                 $('#min_jumlah').val('');
                 $('#max_jumlah').val('');
+                $('#min_harga').val(''); // Reset min harga
+                $('#max_harga').val('');
                 table.ajax.reload();
             });
         });
@@ -189,6 +224,7 @@
                                 $('#nama_barang').val(''); // Kosongkan input field
                                 $('#kategori_id').val('');
                                 $('#jumlah').val('');
+                                $('#harga').val('');
 
                                 // Refresh tabel atau lakukan tindakan lain
                                 $('#barangTable').DataTable().ajax.reload();
@@ -221,7 +257,8 @@
                     $('#showModal .modal-body').html(`
                     <p><strong>Nama Barang:</strong> ${response.result.nama_barang}</p>
                     <p><strong>Kategori:</strong> ${response.result.kategori.kategori}</p>
-                    <p><strong>Jumlah:</strong> ${response.result.jumlah}</p>`);
+                    <p><strong>Jumlah:</strong> ${response.result.jumlah}</p>
+                    <p><strong>Harga:</strong> ${response.result.harga}</p>`)
                 },
                 error: function(xhr, status, error) {
                     Swal.fire({
@@ -241,6 +278,7 @@
                 $('#editModal #nama_barang').val(data.barang.nama_barang);
                 $('#editModal #kategori_id').val(data.barang.kategori_id);
                 $('#editModal #jumlah').val(data.barang.jumlah);
+                $('#editModal #harga').val(data.barang.harga);
                 $('#editModal').modal('show');
             });
         });

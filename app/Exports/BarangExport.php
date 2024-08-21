@@ -8,9 +8,6 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Carbon\Carbon;
 
@@ -22,7 +19,7 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
     public function collection()
     {
         // Hanya memilih kolom yang diinginkan
-        return barang::with('kategori')->get();
+        return barang::select('nama_barang','kategori_id','jumlah','created_at');
     }
 
     private $rowNumber = 0;
@@ -34,7 +31,7 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'Nama Barang',
             'Kategori',
             'Jumlah',
-            'Registration Date'
+            'Tanggal'
         ];
     }
 
@@ -52,10 +49,10 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
     
     public function styles(Worksheet $sheet)
     {
+        // Menambahkan gaya pada header
         $sheet->getStyle('A1:E1')->applyFromArray([
             'font' => [
                 'bold' => true,
-                
             ], 
             'borders' => [
                 'allBorders' => [
@@ -67,15 +64,9 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             ],
-            'padding' => [
-                'paddingTop' => 10,
-                'paddingRight' => 10,
-                'paddingBottom' => 10,
-                'paddingLeft' => 10,
-            ],
         ]);
 
-        // Menentukan border dan padding untuk semua sel
+        // Menambahkan border pada semua sel
         $sheet->getStyle('A1:E' . $sheet->getHighestRow())->applyFromArray([
             'borders' => [
                 'allBorders' => [
@@ -87,17 +78,9 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             ],
-            'padding' => [
-                'paddingTop' => 10,
-                'paddingRight' => 10,
-                'paddingBottom' => 10,
-                'paddingLeft' => 10,
-            ],
         ]);
 
         return [];
-    
     }
-    
 }
 

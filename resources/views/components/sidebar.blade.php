@@ -1,4 +1,4 @@
-<div class="sidebar sidebar-style-2">
+<div class="sidebar sidebar-style-1">
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <div class="user">
@@ -36,7 +36,7 @@
                     </div>
                 </div>
             </div>
-            <ul class="nav nav-primary">
+            <ul class="nav">
                 <li class="nav-item active">
                     <a href="/home">
                         <i class="fas fa-home"></i>
@@ -61,6 +61,40 @@
                         <p>Tabel Kategori</p>
                     </a>
 
+                </li>
+                <li class="nav-item">
+                    <a href="/supplier">
+                        <i class="flaticon-box-1"></i>
+                        <p>Manajemen Supplier</p>
+
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a data-toggle="collapse" href="#maps">
+                        <i class="flaticon-delivery-truck"></i>
+                        <p>Pengiriman & Penerimaan</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="maps">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="/pengiriman">
+                                    <span class="sub-item">Pengiriman</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/penerimaan">
+                                    <span class="sub-item">Penerimaan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="/transaksi">
+                        <i class="far fa-credit-card"></i>
+                        <p>Transaksi</p>
+                    </a>
                 </li>
                 </li>
             </ul>

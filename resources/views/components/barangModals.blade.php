@@ -30,6 +30,11 @@
                         <input type="number" class="form-control" id="jumlah" name="jumlah" min="1"
                             required>
                     </div>
+                    <div class="form-group">
+                        <label for="harga">Harga</label>
+                        <input type="number" class="form-control" id="harga" name="harga" min="100"
+                            required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary tombol-simpan">Simpan</button>
@@ -93,6 +98,11 @@
                     <div class="form-group">
                         <label for="jumlah">Jumlah</label>
                         <input type="number" class="form-control" id="jumlah" name="jumlah" min="1"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="harga">harga</label>
+                        <input type="number" class="form-control" id="harga" name="harga" min="1"
                             required>
                     </div>
                 </div>

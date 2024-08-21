@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BarangExport;
 use App\Models\Barang;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class BarangController extends Controller
@@ -33,6 +35,13 @@ class BarangController extends Controller
         if ($request->filled('max_jumlah')) {
             $data->where('jumlah', '<=', $request->max_jumlah);
         }
+        if ($request->filled('min_harga')) {
+            $data->where('harga', '>=', $request->min_harga);
+        }
+
+        if ($request->filled('max_harga')) {
+            $data->where('harga', '<=', $request->max_harga);
+        }
 
 
 
@@ -40,6 +49,8 @@ class BarangController extends Controller
     return DataTables::of($data)
         ->addIndexColumn()->addColumn('kategori', function($row) {
             return $row->kategori->kategori;
+        }) ->addColumn('harga', function($row) {
+            return 'Rp. ' . number_format($row->harga, 0, ',', '.');
         })
         ->addColumn('aksi', function($row){
             return view('components.btn',compact('row'));
@@ -57,6 +68,7 @@ class BarangController extends Controller
         'nama_barang' => 'required|string|max:255',
         'kategori_id' => 'required|exists:kategoris,id',
         'jumlah' => 'required|integer|min:1',
+        'harga' => 'required|integer|min:1',
     ]);
 
     // Buat barang baru
@@ -75,6 +87,7 @@ class BarangController extends Controller
             'nama_barang' => $request->nama_barang,
             'kategori_id' => $request->kategori_id,
             'jumlah' => $request->jumlah,
+            'harga' => $request->harga,
         ]);
 
     return response()->json([
@@ -84,6 +97,11 @@ class BarangController extends Controller
 }
 }
     
+
+public function export() 
+{
+    return Excel::download(new BarangExport, 'barang.xlsx');
+}
 
     public function show($id)
     {
@@ -107,6 +125,7 @@ class BarangController extends Controller
             'nama_barang' => 'required|string|max:255',
             'kategori_id' => 'required|exists:kategoris,id',
             'jumlah' => 'required|integer|min:1',
+            'harga' => 'required|integer|min:1',
         ]);
 
         $barang = Barang::findOrFail($id);
@@ -114,6 +133,7 @@ class BarangController extends Controller
             'nama_barang' => $request->nama_barang,
             'kategori_id' => $request->kategori_id,
             'jumlah' => $request->jumlah,
+            'harga' => $request->harga,
         ]);
 
         return response()->json([
